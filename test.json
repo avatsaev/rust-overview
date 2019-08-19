@@ -1,0 +1,11 @@
+{
+    "users":  [
+        {
+            "id": 1,
+            "name":  "Aslan",
+            "isAdmin": true
+        }
+    ],
+    "page": 1,
+    "total": 233
+}
