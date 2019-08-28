@@ -1,3 +1,5 @@
+
+
 /** fn borrow_sum(v: &Vec<i32>) -> i32 {
 //   let mut sum = 0;
 //   for val in v  {
@@ -59,15 +61,32 @@
 */
 
 ////////////////////////
-enum State {
+#[derive(Copy, Clone)]
+enum MachineState {
     Normal,
     Comment,
     Upper,
     Lower
 }
 
-fn machine_cycle(state: &State, c: char) -> (Option<char>, State) {
+fn machine_cycle(state: MachineState, c: char) -> (Option<char>, MachineState) {
+    use self::MachineState::*;
 
+    match (state, c) {
+        (Normal, '#') => (None, Comment),
+        (Normal, '^') => (None, Upper),
+        (Normal, '_') => (None, Lower),
+        (Normal, other) => (Some(other), Normal),
+
+        (Comment, '#') => (None, Normal),
+        (Comment, _) => (None, Comment),
+
+        (Upper, '^') => (None, Normal),
+        (Upper, other) => (Some(other.to_uppercase().nth(0).unwrap()), Comment),
+
+        (Lower, '_') => (None, Normal),
+        (Lower, other) => (Some(other.to_lowercase().nth(0).unwrap()), Lower)
+    }
 }
 
 
@@ -97,6 +116,23 @@ fn main() {
     //     print_action(a)
     // }
     **/
+
+    let mut state = MachineState::Normal;
+
+    let mut processed_string = String::new();
+
+    let input = "This _Is_ some ^Input^. #we want thi processed without this comment#";
+    for c in input.chars() {
+        let (output, new_state) = machine_cycle(state, c);
+        if let Some(c_) = output {
+            processed_string.push(c_);
+        }
+
+        state = new_state;
+
+    }
+
+    println!("{}", processed_string);
 
     /////////
 
